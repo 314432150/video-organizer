@@ -1,13 +1,10 @@
 #!/bin/bash
+# 设置默认值
+CONCURRENCY=${CONCURRENCY:-3}
+FOLDER_PATHS=${FOLDER_PATHS:-/media/av /media/movies /media/sv}
 
-# 获取传入的参数
-ARGS="$@"
+# 执行任务
+cd /app
 
-# 创建 cron 任务
-echo "16 52 * * * python /app/src/cli/main.py $ARGS >> /app/logs/cron.log 2>&1" > /etc/cron.d/video-organizer
-
-# 启动 cron 服务
-cron
-
-# 保持容器运行并输出日志
-tail -f /app/logs/cron.log 
+# 使用数组展开传递参数
+python src/cli/main.py --concurrency ${CONCURRENCY} ${FOLDER_PATHS}

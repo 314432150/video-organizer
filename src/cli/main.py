@@ -22,7 +22,16 @@ async def main():
     parser = argparse.ArgumentParser(description='视频文件自动整理工具')
     parser.add_argument('folder_paths', nargs='+', help='需要整理的文件夹路径，可以指定多个路径')
     parser.add_argument('--concurrency', type=int, default=3, help='同时处理的最大目录数（默认为3）')
+    
+    # 添加调试信息
+    print("命令行参数:", sys.argv)
+    
     args = parser.parse_args()
+    
+    # 打印解析后的参数
+    print("解析后的参数:")
+    print("- 并发数:", args.concurrency)
+    print("- 文件夹路径:", args.folder_paths)
 
     # 使用信号量限制并发数
     semaphore = asyncio.Semaphore(args.concurrency)
