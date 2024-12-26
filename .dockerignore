@@ -6,3 +6,41 @@ __pycache__/
 # GUI 相关
 src/gui/
 **/gui/
+
+# 版本控制
+.git
+.gitignore
+
+# 运行环境
+.env
+.venv
+venv/
+ENV/
+.conda/
+
+# 编辑器配置
+.idea/
+.vscode/
+
+# 测试相关
+tests/
+test/
+pytest.ini
+.coverage
+htmlcov/
+
+# 文档和其他
+*.md
+docs/
+README*
+LICENSE*
+
+# 构建和依赖
+*.log
+dist/
+build/
+*.egg-info/
+
+# docker
+Dockerfile
+docker-compose.yml
