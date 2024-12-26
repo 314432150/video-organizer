@@ -1,0 +1,21 @@
+version: "3.8"
+services:
+  video-organizer:
+    container_name: video-organizer
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    networks:
+      - 1panel-network
+    volumes:
+      # 视频目录
+      - /mnt/data1/media/av:/media/av
+      - /mnt/data2/media/movies:/media/movies
+      - /mnt/data2/media/sv:/media/sv
+      # 日志目录
+      - ./logs:/app/logs
+    restart: unless-stopped
+    command: --concurrency 3 /media/av /media/movies /media/sv
+networks:
+  1panel-network:
+    external: true
