@@ -15,13 +15,16 @@ class ConsoleLogger:
     async def _safe_print(message):
         """异步安全的打印函数，同时输出到控制台和日志文件"""
         async with ConsoleLogger._print_lock:
+            # 获取时间戳
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            formatted_message = f"[{timestamp}] {message}"
+            
             # 打印到控制台
-            print(message)
+            print(formatted_message)
             
             # 写入日志文件
             await ConsoleLogger._ensure_log_directory()
-            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            log_message = f"[{timestamp}] {message}\n"
+            log_message = f"{formatted_message}\n"
             
             # 使用 asyncio.to_thread 进行异步文件写入
             await asyncio.to_thread(
