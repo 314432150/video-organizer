@@ -3,8 +3,8 @@ services:
   video-organizer:
     container_name: video-organizer
     build:
-      context: ..
-      dockerfile: docker/Dockerfile
+      context: .
+      dockerfile: Dockerfile
     networks:
       - 1panel-network
     volumes:
