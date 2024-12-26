@@ -66,7 +66,27 @@ class VideoOrganizerGUI:
         if not paths:
             messagebox.showwarning("警告", "请至少选择一个文件夹")
             return
+        
+        # 更新进度条状态为检查中
+        self.progress_frame.update_status("正在检查目录...")
+        self.progress_frame.update_progress(0, len(paths))
+        
+        # 首先检查所有路径是否存在
+        invalid_paths = [path for path in paths if not os.path.exists(path)]
+        if invalid_paths:
+            # 显示失败状态后重置进度条
+            self.progress_frame.update_progress(len(paths), len(paths))
+            self.progress_frame.update_status("处理失败：发现无效目录")
+            error_msg = "以下目录不存在：\n" + "\n".join(invalid_paths)
+            messagebox.showerror("错误", error_msg)
+            # 使用 reset() 方法重置进度条
+            self.progress_frame.reset()
+            return
             
+        # 更新进度条状态为开始处理
+        self.progress_frame.update_status("开始处理文件...")
+        self.progress_frame.update_progress(0, len(paths))
+        
         # 使用信号量限制并发数
         concurrency = self.settings_frame.get_concurrency()
         semaphore = asyncio.Semaphore(concurrency)
@@ -88,14 +108,19 @@ class VideoOrganizerGUI:
         tasks = [process_with_semaphore(path) for path in paths]
         results = await asyncio.gather(*tasks)
         
-        # 检查处理结果（现在空目录也算作成功）
-        success_count = len(paths)  # 所有处理过的目录都算作成功
+        # 修改：只计算实际成功的处理数量
+        success_count = sum(1 for result in results if result)
         total_count = len(paths)
         
         # 确保进度条显示完成状态
         self.progress_frame.update_progress(total_count, total_count)
         self.progress_frame.update_status(f"处理完成！成功: {success_count}/{total_count}")
-        messagebox.showinfo("完成", f"文件整理完成！\n成功处理 {success_count}/{total_count} 个目录")
+        
+        # 根据处理结果显示不同的消息
+        if success_count == total_count:
+            messagebox.showinfo("完成", f"文件整理完成！\n成功处理 {success_count}/{total_count} 个目录")
+        else:
+            messagebox.showwarning("完成", f"文件整理完成，但有错误发生。\n成功处理 {success_count}/{total_count} 个目录")
 
     def start_organize(self):
         """开始整理文件"""
